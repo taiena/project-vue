@@ -1,7 +1,7 @@
 <template>
   <body>
     <div>
-      <label for="wallet">Тикер {{ ticker }}</label>
+      <label for="wallet">Тикер</label>
       <input
         v-model="ticker"
         v-on:keydown.enter="add"
@@ -21,34 +21,46 @@
 
       <div
         v-for="t in tickers"
-        :key="t"
-      >
+        :key="t.name"
+        @click="select = t">
         <div>
-          <div>{{ t.name }} - USD</div>
-          <div>{{ t.price }}</div>
+          <div
+            :class="select === t ? 'SelectedName' : ''"
+          >
+            {{ t.name }} - USD
+          </div>
+          <div 
+            :class="{
+              'SelectedPrice': select === t
+            }"
+          >
+            {{ t.price }}
+          </div>
         </div>
-        <button @click="handleDelete(t)">Удалить</button>
+        <button @click.stop="handleDelete(t)">Удалить</button>
       </div>
 
       <hr />
     </template>
+
+    <section v-if="select">
+      {{ select.name }}
+    </section>
 
 
   </body>
 </template>
 
 <script>
+import { key } from './apikey.js'
 export default {
   name: 'App',
 
   data() {
     return {
-      ticker: 'default',
-      tickers: [
-        { name: 'DEMO1', price: '0' },
-        { name: 'DEMO2', price: '0' },
-        { name: 'DEMO3', price: '0' }
-      ]
+      ticker: null,
+      tickers: [],
+      select: null
     }
   },
 
@@ -60,14 +72,33 @@ export default {
       }
 
       this.tickers.push(newTicker)
+
+      setInterval(async () => {
+        const f = await fetch(
+          `https://min-api.cryptocompare.com/data/price?fsym=${newTicker.name}&tsyms=USD&api_key=${key}`
+        )
+        const data = await f.json()
+        this.tickers.find(t => t.name === newTicker.name).price =
+          data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2)
+      }, 3000)
       this.ticker=""
     },
 
     handleDelete(tickerToRemove) {
       this.tickers = this.tickers.filter(t => t !== tickerToRemove)
+      if (this.select == tickerToRemove) {
+        this.select = null
+      }
     }
   }
 }
 </script>
 
-<style></style>
+<style scoped>
+ .SelectedName {
+   background-color: lightcyan
+ }
+ .SelectedPrice {
+   font-weight: bold
+ }
+</style>
