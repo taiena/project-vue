@@ -1,6 +1,6 @@
 <template>
-  <body>
-    <div>
+  <body class="Container">
+    <div class="InputContainer">
       <label for="wallet">Тикер</label>
       <input
         v-model="ticker"
@@ -9,6 +9,7 @@
         name="wallet"
         id="wallet"
         placeholder="Например DOGE"
+        class="Input"
       />
       <button
         @click="add"
@@ -16,22 +17,21 @@
       >Добавить</button>
     </div>
 
-    <template v-if="tickers.length">
-      <hr />
-
+    <div v-if="tickers.length" class="TickersContainer">
       <div
         v-for="t in tickers"
         :key="t.name"
-        @click="handleSelect(t)">
-        <div>
+        @click="handleSelect(t)"
+        class="Ticker">
+        <div  class="TickerData">
           <div
-            :class="select === t ? 'SelectedName' : ''"
+            :class="select === t ? 'SelectedTicker' : ''"
           >
             {{ t.name }} - USD
           </div>
           <div 
             :class="{
-              'SelectedPrice': select === t
+              'SelectedTicker': select === t
             }"
           >
             {{ t.price }}
@@ -39,9 +39,7 @@
         </div>
         <button @click.stop="handleDelete(t)">Удалить</button>
       </div>
-
-      <hr />
-    </template>
+    </div>
 
     <section v-if="select">
       <div>{{ select.name }}</div>
@@ -128,21 +126,64 @@ export default {
 </script>
 
 <style scoped>
- .SelectedName {
-   background-color: lightcyan
+.Container {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   padding: 2rem;
  }
- .SelectedPrice {
+ .InputContainer {
+   display: flex;
+   flex-direction: column;
+   justify-content: center;
+   align-items: center;
+   margin-bottom: 2rem;
+ }
+ .TickersContainer {
+   display: flex;
+   flex-direction: row;
+   margin-bottom: 2rem;
+ }
+ .Ticker {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   margin: 1rem;
+   padding: 1rem;
+   border: 1px solid lightskyblue;
+   border-radius: 10px;
+ }
+ .TickerData {
+   text-align: center;
+   margin-bottom: 0.8rem
+ }
+ .Input {
+   min-height: 20px;
+   margin: 0.8rem;
+   outline: none;
+   border-radius: 5px;
+   border: 1px solid lightgray
+ }
+ .Input:focus {
+   border: 1px solid lightskyblue
+ }
+ .SelectedTicker {
    font-weight: bold
  }
  .Graph {
    display: flex;
    flex-direction: row;
    width: 700px;
-   height: 700px;
+   height: 300px;
+   padding: 1rem;
+   border: 1px solid lightskyblue;
+   border-radius: 10px;
  }
  .Bar {
    background-color: lightskyblue;
    border: 1px solid blue;
    width: 10px;
  }
+ 
 </style>
