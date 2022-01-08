@@ -125,6 +125,7 @@ export default {
 
     handleDelete(tickerToRemove) {
       this.tickers = this.tickers.filter(t => t !== tickerToRemove)
+      localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
       if (this.select == tickerToRemove) {
         this.select = null
       }
