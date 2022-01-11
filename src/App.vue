@@ -18,26 +18,36 @@
     </div>
 
     <div v-if="tickers.length" class="TickersContainer">
-      <div
-        v-for="t in tickers"
-        :key="t.name"
-        @click="handleSelect(t)"
-        class="Ticker">
-        <div  class="TickerData">
-          <div
-            :class="select === t ? 'SelectedTicker' : ''"
-          >
-            {{ t.name }} - USD
+      <p>
+        Filter:
+        <input
+          v-model="filter"
+          class="Input"
+        >
+      </p>
+
+      <div class="Tickers">
+        <div
+          v-for="t in filteredTickers()"
+          :key="t.name"
+          @click="handleSelect(t)"
+          class="Ticker">
+          <div  class="TickerData">
+            <div
+              :class="select === t ? 'SelectedTicker' : ''"
+            >
+              {{ t.name }} - USD
+            </div>
+            <div 
+              :class="{
+                'SelectedTicker': select === t
+              }"
+            >
+              {{ t.price }}
+            </div>
           </div>
-          <div 
-            :class="{
-              'SelectedTicker': select === t
-            }"
-          >
-            {{ t.price }}
-          </div>
+          <button @click.stop="handleDelete(t)">Удалить</button>
         </div>
-        <button @click.stop="handleDelete(t)">Удалить</button>
       </div>
     </div>
 
@@ -54,7 +64,6 @@
       
     </section>
 
-
   </body>
 </template>
 
@@ -68,7 +77,8 @@ export default {
       ticker: null,
       tickers: [],
       select: null,
-      graph: []
+      graph: [],
+      filter: ""
     }
   },
 
@@ -90,32 +100,35 @@ export default {
       }
 
       this.tickers.push(newTicker)
-
+      this.filter = ""
       localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
-
       this.subscribeToUpdates(newTicker.name)
-
       this.ticker=""
     },
 
     subscribeToUpdates(tickerName) {
-      if (this.tickers.length) {
-        setInterval(async () => {
+      console.log("subscribeToUpdates")
+      setInterval(async () => {
+        console.log("tickers length: ", this.tickers.length)
+        console.log("tickers: ", this.tickers)
+        console.log("tickerName: ", tickerName)
+          
+        if (this.tickers.length !== 0) {
+          console.log("FETCH")
 
-         const f = await fetch(
-          `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD&api_key=${key}`
-         )
+          const f = await fetch(
+            `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD&api_key=${key}`
+          )
+          const data = await f.json()
 
-         const data = await f.json()
+          this.tickers.find(t => t.name === tickerName).price =
+            data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2)
 
-         this.tickers.find(t => t.name === tickerName).price =
-          data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2)
-
-         if (this.select?.name === tickerName) {
-          this.graph.push(data.USD)
-         }
-        }, 3000)
-      }
+          if (this.select?.name === tickerName) {
+            this.graph.push(data.USD)
+          }
+        }
+      }, 7000)
     },
 
     handleSelect(ticker) {
@@ -126,6 +139,7 @@ export default {
     handleDelete(tickerToRemove) {
       this.tickers = this.tickers.filter(t => t !== tickerToRemove)
       localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
+
       if (this.select == tickerToRemove) {
         this.select = null
       }
@@ -134,9 +148,15 @@ export default {
     normalizeGraph() {
       const maxValue = Math.max(...this.graph)
       const minValue = Math.min(...this.graph)
+
       return this.graph.map(
         price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
       )
+    },
+
+    filteredTickers() {
+      return this.tickers
+       .filter(ticker => ticker.name.includes(this.filter))
     }
   }
 }
@@ -158,6 +178,12 @@ export default {
    margin-bottom: 2rem;
  }
  .TickersContainer {
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   margin-bottom: 2rem;
+ }
+ .Tickers {
    display: flex;
    flex-direction: row;
    margin-bottom: 2rem;
