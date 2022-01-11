@@ -24,6 +24,19 @@
           v-model="filter"
           class="Input"
         >
+        <button
+          v-if="page > 1"
+          @click="page = page - 1"
+        >
+          Prev
+        </button>
+
+        <button
+          v-if="hasNextPage"
+          @click="page = page + 1"
+        >
+          Next
+        </button>
       </p>
 
       <div class="Tickers">
@@ -78,7 +91,9 @@ export default {
       tickers: [],
       select: null,
       graph: [],
-      filter: ""
+      filter: "",
+      page: 1,
+      hasNextPage: true
     }
   },
 
@@ -155,8 +170,18 @@ export default {
     },
 
     filteredTickers() {
-      return this.tickers
-       .filter(ticker => ticker.name.includes(this.filter))
+      const start = (this.page - 1) * 6
+      const end = this.page * 6
+      const filteredTickers = this.tickers.filter(ticker => ticker.name.includes(this.filter))
+      this.hasNextPage = filteredTickers.length > end
+
+      return filteredTickers.slice(start, end)
+    }
+  },
+
+  watch: {
+    filter() {
+      this.page = 1
     }
   }
 }
