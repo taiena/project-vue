@@ -214,6 +214,12 @@ export default {
   },
 
   watch: {
+    paginatedTickers() {
+      if (this.paginatedTickers.length === 0 && this.page > 1) {
+        this.page -= 1
+      }
+    },
+
     filter() {
       this.page = 1
 
