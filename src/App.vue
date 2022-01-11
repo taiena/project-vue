@@ -41,7 +41,7 @@
 
       <div class="Tickers">
         <div
-          v-for="t in filteredTickers()"
+          v-for="t in paginatedTickers"
           :key="t.name"
           @click="handleSelect(t)"
           class="Ticker">
@@ -68,7 +68,7 @@
       <div>{{ select.name }}</div>
       <div class="Graph">
         <div
-          v-for="(bar, idx) in normalizeGraph()"
+          v-for="(bar, idx) in normalizedGraph"
           :key="idx"
           :style="{ height: `${bar}%` }"
           class="Bar"
@@ -85,6 +85,8 @@ import { key } from './apikey.js'
 export default {
   name: 'App',
 
+  // data should not contain properties
+  // whose values can be calculated based on the current state
   data() {
     return {
       ticker: null,
@@ -92,8 +94,7 @@ export default {
       select: null,
       graph: [],
       filter: "",
-      page: 1,
-      hasNextPage: true
+      page: 1
     }
   },
 
@@ -118,6 +119,42 @@ export default {
     }
   },
 
+  // computed does not change the state, but returns the value that is used in the template
+  // computed used if there are dependencies
+  computed: {
+    startIndex() {
+      return (this.page - 1) * 6
+    },
+
+    endIndex() {
+      return this.page * 6
+    },
+    
+    filteredTickers() {
+      return this.tickers.filter(ticker => 
+        ticker.name.includes(this.filter)
+      )
+    },
+
+    paginatedTickers() {
+      return this.filteredTickers.slice(this.startIndex, this.endIndex)
+    },
+
+    hasNextPage() {
+      return this.filteredTickers.length > this.endIndex
+    },
+
+    normalizedGraph() {
+      const maxValue = Math.max(...this.graph)
+      const minValue = Math.min(...this.graph)
+
+      return this.graph.map(
+        price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
+      )
+    }
+  },
+
+  // there should be no dependencies in methods
   methods: {
     add() {
       const newTicker = {
@@ -169,24 +206,6 @@ export default {
       if (this.select == tickerToRemove) {
         this.select = null
       }
-    },
-
-    normalizeGraph() {
-      const maxValue = Math.max(...this.graph)
-      const minValue = Math.min(...this.graph)
-
-      return this.graph.map(
-        price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
-      )
-    },
-
-    filteredTickers() {
-      const start = (this.page - 1) * 6
-      const end = this.page * 6
-      const filteredTickers = this.tickers.filter(ticker => ticker.name.includes(this.filter))
-      this.hasNextPage = filteredTickers.length > end
-
-      return filteredTickers.slice(start, end)
     }
   },
 
