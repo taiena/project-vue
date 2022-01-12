@@ -166,9 +166,9 @@ export default {
         price: "0"
       }
 
-      this.tickers.push(newTicker)
+      this.tickers = [...this.tickers, newTicker]
       this.filter = ""
-      localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
+      
       this.subscribeToUpdates(newTicker.name)
       this.ticker=""
     },
@@ -204,7 +204,6 @@ export default {
 
     handleDelete(tickerToRemove) {
       this.tickers = this.tickers.filter(t => t !== tickerToRemove)
-      localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
 
       if (this.selectedTicker == tickerToRemove) {
         this.selectedTicker = null
@@ -213,6 +212,11 @@ export default {
   },
 
   watch: {
+    tickers() {
+      console.log("watch tickers: ", this.tickers)
+      localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
+    },
+
     selectedTicker() {
       this.graph = []
     },
