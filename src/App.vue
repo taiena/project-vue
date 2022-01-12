@@ -200,7 +200,6 @@ export default {
 
     handleSelect(ticker) {
       this.selectedTicker = ticker
-      this.graph = []
     },
 
     handleDelete(tickerToRemove) {
@@ -214,6 +213,10 @@ export default {
   },
 
   watch: {
+    selectedTicker() {
+      this.graph = []
+    },
+
     paginatedTickers() {
       if (this.paginatedTickers.length === 0 && this.page > 1) {
         this.page -= 1
