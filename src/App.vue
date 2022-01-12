@@ -47,13 +47,13 @@
           class="Ticker">
           <div  class="TickerData">
             <div
-              :class="select === t ? 'SelectedTicker' : ''"
+              :class="selectedTicker === t ? 'SelectedTicker' : ''"
             >
               {{ t.name }} - USD
             </div>
             <div 
               :class="{
-                'SelectedTicker': select === t
+                'SelectedTicker': selectedTicker === t
               }"
             >
               {{ t.price }}
@@ -64,8 +64,8 @@
       </div>
     </div>
 
-    <section v-if="select">
-      <div>{{ select.name }}</div>
+    <section v-if="selectedTicker">
+      <div>{{ selectedTicker.name }}</div>
       <div class="Graph">
         <div
           v-for="(bar, idx) in normalizedGraph"
@@ -91,7 +91,7 @@ export default {
     return {
       ticker: null,
       tickers: [],
-      select: null,
+      selectedTicker: null,
       graph: [],
       filter: "",
       page: 1
@@ -191,7 +191,7 @@ export default {
           this.tickers.find(t => t.name === tickerName).price =
             data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2)
 
-          if (this.select?.name === tickerName) {
+          if (this.selectedTicker?.name === tickerName) {
             this.graph.push(data.USD)
           }
         }
@@ -199,7 +199,7 @@ export default {
     },
 
     handleSelect(ticker) {
-      this.select = ticker
+      this.selectedTicker = ticker
       this.graph = []
     },
 
@@ -207,8 +207,8 @@ export default {
       this.tickers = this.tickers.filter(t => t !== tickerToRemove)
       localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
 
-      if (this.select == tickerToRemove) {
-        this.select = null
+      if (this.selectedTicker == tickerToRemove) {
+        this.selectedTicker = null
       }
     }
   },
