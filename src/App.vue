@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { key } from './apikey.js'
+import { loadTicker } from './api.js'
 export default {
   name: 'App',
 
@@ -191,16 +191,15 @@ export default {
         if (this.tickers.length !== 0) {
           console.log("FETCH")
 
-          const f = await fetch(
-            `https://min-api.cryptocompare.com/data/price?fsym=${tickerName}&tsyms=USD&api_key=${key}`
-          )
-          const data = await f.json()
+          const cryptoData = await loadTicker(tickerName)
 
           this.tickers.find(t => t.name === tickerName).price =
-            data.USD > 1 ? data.USD.toFixed(2) : data.USD.toPrecision(2)
+            cryptoData.USD > 1 ?
+            cryptoData.USD.toFixed(2) :
+            cryptoData.USD.toPrecision(2)
 
           if (this.selectedTicker?.name === tickerName) {
-            this.graph.push(data.USD)
+            this.graph.push(cryptoData.USD)
           }
         }
       }, 7000)
