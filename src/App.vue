@@ -99,15 +99,16 @@ export default {
   },
 
   created() {
-    const windowData = Object.fromEntries(new URL(window,location).searchParams.entries())
+    const windowData = Object.fromEntries(
+      new URL(window,location).searchParams.entries()
+    )
 
-    if (windowData.filter) {
-      this.filter = windowData.filter
-    }
-
-    if (windowData.page) {
-      this.page = windowData.page
-    }
+    const VALID_KEYS = ['filter', 'page']
+    VALID_KEYS.forEach(key => {
+      if (windowData[key]) {
+        this[key] = windowData[key]
+      }
+    })
 
     const tickersData = localStorage.getItem("crypto-list")
 
