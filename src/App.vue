@@ -144,6 +144,13 @@ export default {
       return this.filteredTickers.length > this.endIndex
     },
 
+    pageStateOptions() {
+      return {
+        filter: this.filter,
+        page: this.page
+      }
+    },
+
     normalizedGraph() {
       const maxValue = Math.max(...this.graph)
       const minValue = Math.min(...this.graph)
@@ -229,19 +236,13 @@ export default {
 
     filter() {
       this.page = 1
-
-      window.history.pushState(
-        null,
-        document.title,
-        `${window.location.pathname}?filter=${this.filter}&page=${this.page}`
-      )
     },
 
-    page() {
+    pageStateOptions(value) {
       window.history.pushState(
         null,
         document.title,
-        `${window.location.pathname}?filter=${this.filter}&page=${this.page}`
+        `${window.location.pathname}?filter=${value.filter}&page=${value.page}`
       )
     }
   }
