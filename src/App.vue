@@ -56,7 +56,7 @@
                 'SelectedTicker': selectedTicker === t
               }"
             >
-              {{ t.price }}
+              {{ formatPrice(t.price) }}
             </div>
           </div>
           <button @click.stop="handleDelete(t)">Удалить</button>
@@ -114,10 +114,9 @@ export default {
 
     if (tickersData) {
       this.tickers = JSON.parse(tickersData)
-      this.tickers.forEach(ticker => {
-        this.subscribeToUpdates(ticker.name)
-      })
     }
+
+    setInterval(this.updateTickers, 5000)
   },
 
   // computed does not change the state, but returns the value that is used in the template
@@ -176,33 +175,32 @@ export default {
 
       this.tickers = [...this.tickers, newTicker]
       this.filter = ""
-      
-      this.subscribeToUpdates(newTicker.name)
       this.ticker=""
     },
 
-    subscribeToUpdates(tickerName) {
-      console.log("subscribeToUpdates")
-      setInterval(async () => {
-        console.log("tickers length: ", this.tickers.length)
-        console.log("tickers: ", this.tickers)
-        console.log("tickerName: ", tickerName)
-          
-        if (this.tickers.length !== 0) {
-          console.log("FETCH")
+    formatPrice(price) {
+      return price > 1 ? price.toFixed(2) : price.toPrecision(2)
+    },
 
-          const cryptoData = await loadTicker(tickerName)
+    async updateTickers() {
+      if (!this.tickers.length) {
+        return
+      }
 
-          this.tickers.find(t => t.name === tickerName).price =
-            cryptoData.USD > 1 ?
-            cryptoData.USD.toFixed(2) :
-            cryptoData.USD.toPrecision(2)
+      const cryptoData = await loadTicker(this.tickers.map(t => t.name))
 
-          if (this.selectedTicker?.name === tickerName) {
-            this.graph.push(cryptoData.USD)
-          }
+      this.tickers.forEach(ticker => {
+        const price = cryptoData[ticker.name.toUpperCase()]
+
+        if (!price) {
+          ticker.price = '_'
+          return
         }
-      }, 7000)
+
+        const normalizedPrice = 1 / price
+        
+        ticker.price = normalizedPrice
+      })
     },
 
     handleSelect(ticker) {
