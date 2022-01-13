@@ -191,15 +191,8 @@ export default {
 
       this.tickers.forEach(ticker => {
         const price = cryptoData[ticker.name.toUpperCase()]
-
-        if (!price) {
-          ticker.price = '_'
-          return
-        }
-
-        const normalizedPrice = 1 / price
-        
-        ticker.price = normalizedPrice
+      
+        ticker.price = price ?? "-"
       })
     },
 
