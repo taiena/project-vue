@@ -81,7 +81,8 @@
 </template>
 
 <script>
-import { loadTicker } from './api.js'
+import { subscribeToTicker, unsubscribeFromTicker } from './api.js'
+
 export default {
   name: 'App',
 
@@ -114,9 +115,11 @@ export default {
 
     if (tickersData) {
       this.tickers = JSON.parse(tickersData)
+      this.tickers.forEach(ticker => {
+        subscribeToTicker(ticker.name, (newPrice) => 
+          this.updateTicker(ticker.name, newPrice))
+      })
     }
-
-    setInterval(this.updateTickers, 5000)
   },
 
   // computed does not change the state, but returns the value that is used in the template
@@ -176,6 +179,14 @@ export default {
       this.tickers = [...this.tickers, newTicker]
       this.filter = ""
       this.ticker=""
+      subscribeToTicker(newTicker.name, (newPrice) => 
+          this.updateTicker(newTicker.name, newPrice))
+    },
+
+    updateTicker(tickerName, price) {
+      this.tickers
+       .filter(t => t.name === tickerName)
+       .forEach(t => {t.price = price})
     },
 
     formatPrice(price) {
@@ -185,30 +196,20 @@ export default {
       return price > 1 ? price.toFixed(2) : price.toPrecision(2)
     },
 
-    async updateTickers() {
-      if (!this.tickers.length) {
-        return
-      }
-
-      const cryptoData = await loadTicker(this.tickers.map(t => t.name))
-
-      this.tickers.forEach(ticker => {
-        const price = cryptoData[ticker.name.toUpperCase()]
-      
-        ticker.price = price ?? "-"
-      })
-    },
-
     handleSelect(ticker) {
       this.selectedTicker = ticker
     },
 
     handleDelete(tickerToRemove) {
+      console.log("handleDelete tickerToRemove: ", tickerToRemove)
       this.tickers = this.tickers.filter(t => t !== tickerToRemove)
 
       if (this.selectedTicker == tickerToRemove) {
         this.selectedTicker = null
       }
+
+      unsubscribeFromTicker(tickerToRemove.name, () => 
+        console.log("unsubscribed"))
     }
   },
 
