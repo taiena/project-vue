@@ -208,8 +208,7 @@ export default {
         this.selectedTicker = null
       }
 
-      unsubscribeFromTicker(tickerToRemove.name, () => 
-        console.log("unsubscribed"))
+      unsubscribeFromTicker(tickerToRemove.name)
     }
   },
 

@@ -39,12 +39,9 @@ export const subscribeToTicker = (ticker, callback) => {
 }
 
 
-export const unsubscribeFromTicker = (ticker, callback) => {
-  console.log("unsubscribeFromTicker: ", ticker, callback)
-  const subscribers = tickersHandlers.get(ticker) || []
-  // remove function from ticker
-  // filtering a function that is different from the callback
-  tickersHandlers.set(ticker, subscribers.filter(fn => fn !== callback))
+export const unsubscribeFromTicker = (ticker) => {
+  console.log("unsubscribeFromTicker: ", ticker)
+  tickersHandlers.delete(ticker)
 }
 
 setInterval(loadTickers, 5000, tickersHandlers)
