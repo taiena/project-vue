@@ -66,7 +66,7 @@
 
     <section v-if="selectedTicker">
       <div>{{ selectedTicker.name }}</div>
-      <div class="Graph">
+      <div class="Graph" ref="graph">
         <div
           v-for="(bar, idx) in normalizedGraph"
           :key="idx"
@@ -95,7 +95,8 @@ export default {
       selectedTicker: null,
       graph: [],
       filter: "",
-      page: 1
+      page: 1,
+      maxGraphElements: 1
     }
   },
 
@@ -120,6 +121,14 @@ export default {
           this.updateTicker(ticker.name, newPrice))
       })
     }
+  },
+
+  mounted() {
+    window.addEventListener("resize", this.calculateMaxGraphElements)
+  },
+
+  beforeUnmount() {
+    window.removeEventListener("resize", this.calculateMaxGraphElements)
   },
 
   // computed does not change the state, but returns the value that is used in the template
@@ -188,7 +197,11 @@ export default {
        .filter(t => t.name === tickerName)
        .forEach(t => {
          if (t === this.selectedTicker) {
+           this.calculateMaxGraphElements()
            this.graph.push(price)
+           while (this.graph.length > this.maxGraphElements) {
+             this.graph.shift()
+           }
          }
          t.price = price
         })
@@ -214,6 +227,13 @@ export default {
       }
 
       unsubscribeFromTicker(tickerToRemove.name)
+    },
+
+    calculateMaxGraphElements() {
+      if (!this.$refs.graph) {
+        return
+      }
+      this.maxGraphElements = this.$refs.graph.clientWidth / 21 // Bar width + margin
     }
   },
 
@@ -253,8 +273,7 @@ export default {
    display: flex;
    flex-direction: column;
    justify-content: center;
-   align-items: center;
-   padding: 2rem;
+   padding: 3rem;
  }
  .InputContainer {
    display: flex;
@@ -303,7 +322,7 @@ export default {
  .Graph {
    display: flex;
    flex-direction: row;
-   width: 700px;
+   align-items: flex-end;
    height: 300px;
    padding: 1rem;
    border: 1px solid lightskyblue;
@@ -311,8 +330,8 @@ export default {
  }
  .Bar {
    background-color: lightskyblue;
-   border: 1px solid blue;
-   width: 10px;
+   width: 20px;
+   margin: 1px;
  }
  
 </style>
