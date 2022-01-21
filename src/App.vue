@@ -1,21 +1,6 @@
 <template>
   <body class="Container">
-    <div class="InputContainer">
-      <label for="wallet">Тикер</label>
-      <input
-        v-model="ticker"
-        v-on:keydown.enter="add"
-        type="text"
-        name="wallet"
-        id="wallet"
-        placeholder="Например DOGE"
-        class="Input"
-      />
-      <button
-        @click="add"
-        type="button"
-      >Добавить</button>
-    </div>
+    <AddTicker @add-ticker="add" />
 
     <div v-if="tickers.length" class="TickersContainer">
       <p>
@@ -82,15 +67,19 @@
 
 <script>
 import { subscribeToTicker, unsubscribeFromTicker } from './api.js'
+import AddTicker from './components/AddTicker.vue'
 
 export default {
   name: 'App',
+
+  components: {
+    AddTicker
+  },
 
   // data should not contain properties
   // whose values can be calculated based on the current state
   data() {
     return {
-      ticker: null,
       tickers: [],
       selectedTicker: null,
       graph: [],
@@ -179,17 +168,17 @@ export default {
 
   // there should be no dependencies in methods
   methods: {
-    add() {
+    add(ticker) {
       const newTicker = {
-        name: this.ticker,
+        name: ticker,
         price: "0"
       }
 
       this.tickers = [...this.tickers, newTicker]
       this.filter = ""
-      this.ticker=""
+
       subscribeToTicker(newTicker.name, (newPrice) => 
-          this.updateTicker(newTicker.name, newPrice))
+        this.updateTicker(newTicker.name, newPrice))
     },
 
     updateTicker(tickerName, price) {
@@ -275,13 +264,6 @@ export default {
    justify-content: center;
    padding: 3rem;
  }
- .InputContainer {
-   display: flex;
-   flex-direction: column;
-   justify-content: center;
-   align-items: center;
-   margin-bottom: 2rem;
- }
  .TickersContainer {
    display: flex;
    flex-direction: column;
@@ -305,16 +287,6 @@ export default {
  .TickerData {
    text-align: center;
    margin-bottom: 0.8rem
- }
- .Input {
-   min-height: 20px;
-   margin: 0.8rem;
-   outline: none;
-   border-radius: 5px;
-   border: 1px solid lightgray
- }
- .Input:focus {
-   border: 1px solid lightskyblue
  }
  .SelectedTicker {
    font-weight: bold
