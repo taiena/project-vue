@@ -1,6 +1,6 @@
 <template>
   <body class="Container">
-    <AddTicker @add-ticker="add" />
+    <AddTicker @add-ticker="add" :disabled="tooManyTickersAdded" />
 
     <div v-if="tickers.length" class="TickersContainer">
       <p>
@@ -170,6 +170,10 @@ export default {
       return this.graph.map(
         price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
       )
+    },
+
+    tooManyTickersAdded() {
+      return this.tickers.length > 20
     }
   },
 

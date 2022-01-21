@@ -14,6 +14,7 @@
     <Button 
       @click="add"
       title="Добавить"
+      :disabled="disabled"
       :primaryStyle="true"
     />
   </div>
@@ -28,6 +29,14 @@ export default {
 
   components: {
     Button
+  },
+
+  props: {
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
   },
 
   data() {
