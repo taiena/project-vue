@@ -44,7 +44,12 @@
               {{ formatPrice(t.price) }}
             </div>
           </div>
-          <button @click.stop="handleDelete(t)">Удалить</button>
+
+          <Button
+            @click.stop="handleDelete(t)"
+            title="Удалить"
+            :secondaryStyle="true"
+          />
         </div>
       </div>
     </div>
@@ -68,12 +73,14 @@
 <script>
 import { subscribeToTicker, unsubscribeFromTicker } from './api.js'
 import AddTicker from './components/AddTicker.vue'
+import Button from './components/Button.vue'
 
 export default {
   name: 'App',
 
   components: {
-    AddTicker
+    AddTicker,
+    Button
   },
 
   // data should not contain properties

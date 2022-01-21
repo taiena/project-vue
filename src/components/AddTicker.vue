@@ -10,19 +10,25 @@
       placeholder="Например DOGE"
       class="Input"
     />
-    <button
+
+    <Button 
       @click="add"
-      type="button"
-    >
-      Добавить
-    </button>
+      title="Добавить"
+      :primaryStyle="true"
+    />
   </div>
 </template>
 
 <script>
 
+import Button from './Button.vue'
+
 export default {
   name: 'AddTicker',
+
+  components: {
+    Button
+  },
 
   data() {
     return {
