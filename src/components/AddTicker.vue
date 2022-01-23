@@ -39,6 +39,10 @@ export default {
     }
   },
 
+  emits: {
+    "add-ticker": value => typeof value === "string" && value.length > 0
+  },
+
   data() {
     return {
       ticker: null,
@@ -47,6 +51,9 @@ export default {
 
   methods: {
     add() {
+      if (this.ticker.length === 0) {
+        return
+      }
       this.$emit('add-ticker', this.ticker)
       this.ticker = "" // need to fix
     }
