@@ -55,16 +55,10 @@
     </div>
 
     <section v-if="selectedTicker">
-      <div>{{ selectedTicker.name }}</div>
-      <div class="Graph" ref="graph">
-        <div
-          v-for="(bar, idx) in normalizedGraph"
-          :key="idx"
-          :style="{ height: `${bar}%` }"
-          class="Bar"
-        ></div>
-      </div>
-      
+      <Graph
+        :tickerName="selectedTicker.name"
+        :tickerPrice="selectedTicker.price"
+      />      
     </section>
 
   </body>
@@ -74,13 +68,15 @@
 import { subscribeToTicker, unsubscribeFromTicker } from './api.js'
 import AddTicker from './components/AddTicker.vue'
 import Button from './components/Button.vue'
+import Graph from './components/Graph.vue'
 
 export default {
   name: 'App',
 
   components: {
     AddTicker,
-    Button
+    Button,
+    Graph
   },
 
   // data should not contain properties
@@ -89,10 +85,8 @@ export default {
     return {
       tickers: [],
       selectedTicker: null,
-      graph: [],
       filter: "",
-      page: 1,
-      maxGraphElements: 1
+      page: 1
     }
   },
 
@@ -117,14 +111,6 @@ export default {
           this.updateTicker(ticker.name, newPrice))
       })
     }
-  },
-
-  mounted() {
-    window.addEventListener("resize", this.calculateMaxGraphElements)
-  },
-
-  beforeUnmount() {
-    window.removeEventListener("resize", this.calculateMaxGraphElements)
   },
 
   // computed does not change the state, but returns the value that is used in the template
@@ -159,19 +145,6 @@ export default {
       }
     },
 
-    normalizedGraph() {
-      const maxValue = Math.max(...this.graph)
-      const minValue = Math.min(...this.graph)
-
-      if (maxValue === minValue) {
-        return this.graph.map(() => 50)
-      }
-
-      return this.graph.map(
-        price => 5 + ((price - minValue) * 95) / (maxValue - minValue)
-      )
-    },
-
     tooManyTickersAdded() {
       return this.tickers.length > 20
     }
@@ -195,16 +168,7 @@ export default {
     updateTicker(tickerName, price) {
       this.tickers
        .filter(t => t.name === tickerName)
-       .forEach(t => {
-         if (t === this.selectedTicker) {
-           this.calculateMaxGraphElements()
-           this.graph.push(price)
-           while (this.graph.length > this.maxGraphElements) {
-             this.graph.shift()
-           }
-         }
-         t.price = price
-        })
+       .forEach(t => {t.price = price})
     },
 
     formatPrice(price) {
@@ -228,23 +192,12 @@ export default {
 
       unsubscribeFromTicker(tickerToRemove.name)
     },
-
-    calculateMaxGraphElements() {
-      if (!this.$refs.graph) {
-        return
-      }
-      this.maxGraphElements = this.$refs.graph.clientWidth / 21 // Bar width + margin
-    }
   },
 
   watch: {
     tickers() {
       console.log("watch tickers: ", this.tickers)
       localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
-    },
-
-    selectedTicker() {
-      this.graph = []
     },
 
     paginatedTickers() {
@@ -302,19 +255,4 @@ export default {
  .SelectedTicker {
    font-weight: bold
  }
- .Graph {
-   display: flex;
-   flex-direction: row;
-   align-items: flex-end;
-   height: 300px;
-   padding: 1rem;
-   border: 1px solid lightskyblue;
-   border-radius: 10px;
- }
- .Bar {
-   background-color: lightskyblue;
-   width: 20px;
-   margin: 1px;
- }
- 
 </style>
