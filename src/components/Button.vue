@@ -2,7 +2,6 @@
   <div
     class="Button"
     :class="classNames"
-    @click="onClick"
   >
     <span>{{ title }}</span>
   </div>
@@ -17,11 +16,6 @@ export default {
     title: {
       type: String,
       default: "Press"
-    },
-
-    onClick: {
-      type: Function,
-      required: true
     },
 
     disabled: {
