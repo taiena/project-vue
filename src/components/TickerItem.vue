@@ -1,7 +1,9 @@
 <template>
   <div 
-    class="Ticker" 
-    :class="selectedTicker === ticker ? 'SelectedTicker' : ''"
+    :class="[
+              'Ticker', 
+              {'SelectedTicker': selectedTicker === ticker}
+            ]"
     @click="$emit('select', ticker)"
   >
   
@@ -16,7 +18,7 @@
     </div>
 
     <v-button
-      @click="$emit('remove', ticker)"
+      @click.stop="$emit('remove', ticker)"
       title="Удалить"
       :secondaryStyle="true"
     />
@@ -30,6 +32,11 @@ export default {
         ticker: {
             type: Object,
             required: true
+        },
+
+        selectedTicker: {
+            type: Object,
+            default: null
         }
     },
 
@@ -53,6 +60,9 @@ export default {
    padding: 1rem;
    border: 1px solid lightskyblue;
    border-radius: 10px;
+ }
+ .Ticker:hover {
+   cursor: pointer;
  }
  .TickerData {
    text-align: center;
