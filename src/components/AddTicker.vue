@@ -1,14 +1,13 @@
 <template>
   <div class="InputContainer">
     <label for="wallet">Тикер</label>
-    <input
+
+    <v-input
       v-model="ticker"
       v-on:keydown.enter="add"
-      type="text"
       name="wallet"
       id="wallet"
       placeholder="Например DOGE"
-      class="Input"
     />
 
     <v-button 
@@ -64,16 +63,5 @@ export default {
    margin-bottom: 2rem;
  }
 
-.Input {
-   min-height: 20px;
-   margin: 0.8rem;
-   outline: none;
-   border-radius: 5px;
-   border: 1px solid lightgray
- }
- 
- .Input:focus {
-   border: 1px solid lightskyblue
- }
 </style>
 

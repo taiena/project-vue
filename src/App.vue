@@ -5,10 +5,9 @@
     <div v-if="tickers.length" class="TickersContainer">
       <p>
         Filter:
-        <input
+        <v-input
           v-model="filter"
-          class="Input"
-        >
+        />
         <button
           v-if="page > 1"
           @click="page = page - 1"
