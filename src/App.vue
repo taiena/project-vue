@@ -23,34 +23,13 @@
         </button>
       </p>
 
-      <div class="Tickers">
-        <div
-          v-for="t in paginatedTickers"
-          :key="t.name"
-          @click="handleSelect(t)"
-          class="Ticker">
-          <div  class="TickerData">
-            <div
-              :class="selectedTicker === t ? 'SelectedTicker' : ''"
-            >
-              {{ t.name }} - USD
-            </div>
-            <div 
-              :class="{
-                'SelectedTicker': selectedTicker === t
-              }"
-            >
-              {{ formatPrice(t.price) }}
-            </div>
-          </div>
+      <TickersList
+        :tickers="paginatedTickers"
+        :selectedTicker="selectedTicker"
+        @remove="handleRemove"
+        @select="handleSelect"
+      />
 
-          <v-button
-            @click.stop="handleDelete(t)"
-            title="Удалить"
-            :secondaryStyle="true"
-          />
-        </div>
-      </div>
     </div>
 
     <section v-if="selectedTicker">
@@ -67,13 +46,15 @@
 import { subscribeToTicker, unsubscribeFromTicker } from './api.js'
 import AddTicker from './components/AddTicker.vue'
 import Graph from './components/Graph.vue'
+import TickersList from "./components/TickersList"
 
 export default {
   name: 'App',
 
   components: {
     AddTicker,
-    Graph
+    Graph,
+    TickersList
   },
 
   // data should not contain properties
@@ -168,19 +149,11 @@ export default {
        .forEach(t => {t.price = price})
     },
 
-    formatPrice(price) {
-      if (price === "-") {
-        return price
-      }
-      return price > 1 ? price.toFixed(2) : price.toPrecision(2)
-    },
-
     handleSelect(ticker) {
       this.selectedTicker = ticker
     },
 
-    handleDelete(tickerToRemove) {
-      console.log("handleDelete tickerToRemove: ", tickerToRemove)
+    handleRemove(tickerToRemove) {
       this.tickers = this.tickers.filter(t => t !== tickerToRemove)
 
       if (this.selectedTicker == tickerToRemove) {
@@ -193,7 +166,6 @@ export default {
 
   watch: {
     tickers() {
-      console.log("watch tickers: ", this.tickers)
       localStorage.setItem("crypto-list", JSON.stringify(this.tickers))
     },
 
@@ -230,26 +202,5 @@ export default {
    flex-direction: column;
    align-items: center;
    margin-bottom: 2rem;
- }
- .Tickers {
-   display: flex;
-   flex-direction: row;
-   margin-bottom: 2rem;
- }
- .Ticker {
-   display: flex;
-   flex-direction: column;
-   align-items: center;
-   margin: 1rem;
-   padding: 1rem;
-   border: 1px solid lightskyblue;
-   border-radius: 10px;
- }
- .TickerData {
-   text-align: center;
-   margin-bottom: 0.8rem
- }
- .SelectedTicker {
-   font-weight: bold
  }
 </style>
