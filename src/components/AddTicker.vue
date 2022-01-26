@@ -11,7 +11,7 @@
       class="Input"
     />
 
-    <Button 
+    <v-button 
       @click="add"
       title="Добавить"
       :disabled="disabled"
@@ -22,14 +22,8 @@
 
 <script>
 
-import Button from './Button.vue'
-
 export default {
   name: 'AddTicker',
-
-  components: {
-    Button
-  },
 
   props: {
     disabled: {

@@ -45,7 +45,7 @@
             </div>
           </div>
 
-          <Button
+          <v-button
             @click.stop="handleDelete(t)"
             title="Удалить"
             :secondaryStyle="true"
@@ -67,7 +67,6 @@
 <script>
 import { subscribeToTicker, unsubscribeFromTicker } from './api.js'
 import AddTicker from './components/AddTicker.vue'
-import Button from './components/Button.vue'
 import Graph from './components/Graph.vue'
 
 export default {
@@ -75,7 +74,6 @@ export default {
 
   components: {
     AddTicker,
-    Button,
     Graph
   },
 
