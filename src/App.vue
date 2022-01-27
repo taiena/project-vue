@@ -3,25 +3,13 @@
     <AddTicker @add-ticker="add" :disabled="tooManyTickersAdded" />
 
     <div v-if="tickers.length" class="TickersContainer">
-      <p>
-        Filter:
-        <v-input
-          v-model="filter"
-        />
-        <button
-          v-if="page > 1"
-          @click="page = page - 1"
-        >
-          Prev
-        </button>
-
-        <button
-          v-if="hasNextPage"
-          @click="page = page + 1"
-        >
-          Next
-        </button>
-      </p>
+      <Filter
+        :page="page"
+        :hasNextPage="hasNextPage"
+        @filtration="changeFilter"
+        @prevPage="goPrevPage"
+        @nextPage="goNextPage"
+      />
 
       <TickersList
         :tickers="paginatedTickers"
@@ -47,6 +35,7 @@ import { subscribeToTicker, unsubscribeFromTicker } from './api.js'
 import AddTicker from './components/AddTicker.vue'
 import Graph from './components/Graph.vue'
 import TickersList from "./components/TickersList"
+import Filter from "./components/Filter"
 
 export default {
   name: 'App',
@@ -54,7 +43,8 @@ export default {
   components: {
     AddTicker,
     Graph,
-    TickersList
+    TickersList,
+    Filter
   },
 
   // data should not contain properties
@@ -162,6 +152,18 @@ export default {
 
       unsubscribeFromTicker(tickerToRemove.name)
     },
+
+    changeFilter(filter) {
+      this.filter = filter
+    },
+
+    goPrevPage() {
+      this.page = this.page - 1
+    },
+
+    goNextPage() {
+      this.page = this.page + 1
+    }
   },
 
   watch: {
