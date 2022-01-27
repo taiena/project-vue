@@ -24,6 +24,7 @@
       <Graph
         :tickerName="selectedTicker.name"
         :tickerPrice="selectedTicker.price"
+        @close="unSelectTicker"
       />      
     </section>
 
@@ -141,6 +142,10 @@ export default {
 
     handleSelect(ticker) {
       this.selectedTicker = ticker
+    },
+
+    unSelectTicker() {
+      this.selectedTicker = null
     },
 
     handleRemove(tickerToRemove) {

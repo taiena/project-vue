@@ -1,14 +1,19 @@
 <template>
-  <div>
+  <div  class="GraphContainer">
     <div>{{ tickerName }}</div>
-      <div class="Graph" ref="graph">
-        <div
-          v-for="(bar, idx) in normalizedGraph"
-          :key="idx"
-          :style="{ height: `${bar}%` }"
-          class="Bar"
-        ></div>
-      </div>
+    
+    <div class="Graph" ref="graph">
+      <div
+        v-for="(bar, idx) in normalizedGraph"
+        :key="idx"
+        :style="{ height: `${bar}%` }"
+        class="Bar"
+      />
+    </div>
+
+    <div class="Close"
+      @click="$emit('close')"
+    >x</div>
   </div>
 </template>
 
@@ -28,6 +33,10 @@ export default {
       required: true
     }
   },
+
+  emits: [
+    "close"
+  ],
 
   data() {
     return {
@@ -86,12 +95,17 @@ export default {
 </script>
 
 <style scoped>
+.GraphContainer {
+  position: relative;
+  text-align: center;
+}
 .Graph {
    display: flex;
    flex-direction: row;
    align-items: flex-end;
    height: 300px;
    padding: 1rem;
+   margin-top: 0.5rem;
    border: 1px solid lightskyblue;
    border-radius: 10px;
  }
@@ -99,6 +113,23 @@ export default {
    background-color: lightskyblue;
    width: 20px;
    margin: 1px;
+ }
+ .Close {
+   position: absolute;
+   top: 2.5rem;
+   right: 1rem;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 20px;
+   height: 20px;
+   color:white;
+   background-color: lightskyblue;
+   border: 1px solid white;
+   border-radius: 50%
+ }
+ .Close:hover {
+   cursor: pointer;
  }
 </style>
 
