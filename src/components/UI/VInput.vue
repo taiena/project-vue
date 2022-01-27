@@ -26,7 +26,6 @@ export default {
 <style scoped>
 .Input {
    min-height: 20px;
-   margin: 0.8rem;
    outline: none;
    border-radius: 5px;
    border: 1px solid lightgray

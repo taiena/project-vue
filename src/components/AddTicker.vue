@@ -1,14 +1,16 @@
 <template>
-  <div class="InputContainer">
+  <div class="AddTickerContainer">
     <label for="wallet">Тикер</label>
 
-    <v-input
-      v-model="ticker"
-      v-on:keydown.enter="add"
-      name="wallet"
-      id="wallet"
-      placeholder="Например DOGE"
-    />
+    <div class="InputContainer">
+      <v-input
+        v-model="ticker"
+        v-on:keydown.enter="add"
+        name="wallet"
+        id="wallet"
+        placeholder="Например DOGE"
+      />
+    </div>
 
     <v-button 
       @click="add"
@@ -55,13 +57,15 @@ export default {
 </script>
 
 <style scoped>
- .InputContainer {
+ .AddTickerContainer {
    display: flex;
    flex-direction: column;
    justify-content: center;
    align-items: center;
    margin-bottom: 2rem;
  }
-
+ .InputContainer {
+   margin: 1rem;
+ }
 </style>
 
